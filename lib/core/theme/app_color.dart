@@ -3,35 +3,35 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   static const light = {
-    'primary': Color(0xFF2F80ED),
+    'primary': Color(0xFF2563EB),
     'secondary': Color(0xFF27AE60),
 
-    'background': Color(0xFFF7F9FC),
+    'background': Color(0xFFF8FAFC),
     'surface': Color(0xFFFFFFFF),
-    'text': Color(0xFF1A1A1A),
-    'border': Color.fromARGB(255, 35, 90, 154),
+    'text': Color(0xFF1E293B),
+    'border': Color.fromARGB(255, 153, 192, 244),
 
     // 🔹 Snackbar / Status colors
-    'success': Color(0xFF27AE60), // Green
-    'error': Color(0xFFEB5757), // Red
-    'warning': Color(0xFFF2C94C), // Yellow
-    'info': Color(0xFF2F80ED), // Blue
+    'success': Color(0xFF22C55E), // Green
+    'error': Color(0xFFEF4444), // Red
+    'warning': Color(0xFFFF59E0B), // Yellow
+    'info': Color(0xFF0EA5E9), // Blue
   };
 
   static const dark = {
-    'primary': Color(0xFF4A90E2),
+    'primary': Color(0xFF3B82F6),
     'secondary': Color(0xFF2ECC71),
 
     'background': Color(0xFF0F172A),
     'surface': Color(0xFF1E293B),
-    'text': Color(0xFFF8FAFC),
-    'border': Color.fromARGB(255, 212, 226, 246),
+    'text': Color(0xFFF1F5F9),
+    'border': Color(0xFF334155),
 
     // 🔹 Snackbar / Status colors (adjusted for dark)
-    'success': Color(0xFF22C55E),
-    'error': Color(0xFFEF4444),
-    'warning': Color(0xFFFACC15),
-    'info': Color(0xFF60A5FA),
+    'success': Color(0xFF4ADE80),
+    'error': Color(0xFFF87171),
+    'warning': Color(0xFFFBBF24),
+    'info': Color(0xFF38BDF8),
   };
 
   static Color get(String colorName, BuildContext context) {
