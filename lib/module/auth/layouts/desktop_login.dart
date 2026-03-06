@@ -11,18 +11,18 @@ class DesktopLogin extends StatelessWidget {
     return Scaffold(
       body: Row(
         children: [
-          Expanded(
+          Padding(
+            padding: EdgeInsets.all(20.0),
             child: Container(
-              color: Colors.blueGrey.shade900,
-              child: Center(
-                child: Text(
-                  "ប្រព័ន្ធគ្រប់គ្រងធនធានមនុស្ស",
-                  style: TextStyles.moul(
-                    context,
-                    fontSize: 40,
-                    color: AppColors.get('warning', context),
-                  ),
-                ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: Image.asset(
+                'asset/image/background.png',
+                width: 1100,
+                height: 600,
+                fit: BoxFit.cover,
               ),
             ),
           ),
@@ -30,7 +30,7 @@ class DesktopLogin extends StatelessWidget {
           Expanded(
             child: Center(
               child: SizedBox(
-                width: 420,
+                width: 520,
                 child: Card(
                   elevation: 5,
                   child: Padding(
