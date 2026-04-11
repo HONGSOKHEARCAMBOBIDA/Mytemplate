@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 class TextStyles {
   static TextStyle siemreap(
     BuildContext context, {
-    double fontSize = 16,
+    double fontSize = 14,
     Color? color,
     FontWeight fontWeight = FontWeight.normal,
   }) {
@@ -22,7 +22,7 @@ class TextStyles {
   }) {
     return GoogleFonts.moul(
       fontSize: fontSize,
-      color: color ?? Theme.of(context).colorScheme.primary,
+      color: color 
     );
   }
 

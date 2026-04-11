@@ -2,6 +2,8 @@ import 'package:get/get.dart';
 import 'package:kemerahrfrontend/core/constant/message.dart';
 import 'package:kemerahrfrontend/module/auth/service/authservice.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:kemerahrfrontend/module/main/binding/mainbinding.dart';
+import 'package:kemerahrfrontend/module/main/view/mainview.dart';
 import 'package:kemerahrfrontend/share/widgets/snackbar.dart';
 
 class AuthController extends GetxController {
@@ -30,6 +32,7 @@ class AuthController extends GetxController {
           title: Message.Success,
           message: Message.LoginSuccess,
         );
+        Get.offAll(()=> MainView(),binding: MainBinding());
       } else {
         CustomSnackbar.error(title: Message.Error, message: Message.LoginError);
       }
