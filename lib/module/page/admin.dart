@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kemerahrfrontend/module/branch/view/branchview.dart';
 import 'package:kemerahrfrontend/module/main/controller/maincontroller.dart';
-import 'package:kemerahrfrontend/module/page/currencypage.dart';
+import 'package:kemerahrfrontend/module/shift/view/shift_view.dart';
 class Admin extends StatelessWidget {
   const Admin({super.key});
 
@@ -13,7 +13,7 @@ class Admin extends StatelessWidget {
       builder: (controller) {
         final pages = [
           Branchview(),
-          Currencypage(),
+          ShiftView(),
         ];
         return pages[controller.selectedFeatureIndex];
       },

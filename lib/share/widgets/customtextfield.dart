@@ -11,6 +11,7 @@ class CustomTextField extends StatefulWidget {
   final TextInputType keyboardType;
   final bool obscureText;
   final ValueChanged<String>? onChanged;
+   final ValueChanged<String>? onSubmitted; 
   final bool readOnly;
   final List<TextInputFormatter>? inputFormatters;
 
@@ -24,6 +25,7 @@ class CustomTextField extends StatefulWidget {
     this.keyboardType = TextInputType.text,
     this.obscureText = false,
     this.onChanged,
+    this.onSubmitted,
     this.inputFormatters,
   }) : super(key: key);
 
@@ -90,6 +92,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             return null;
           },
       onChanged: widget.onChanged,
+      onFieldSubmitted: widget.onSubmitted,
     );
   }
 }

@@ -9,10 +9,10 @@ class Branchcontroller extends GetxController {
   var branch = <Data>[].obs;
   var isLoading = false.obs;
   final nameController = TextEditingController();
-final latController = TextEditingController();
-final lngController = TextEditingController();
-final radiusController = TextEditingController();
-var editingIndex = RxnInt(); // nullable int
+  final latController = TextEditingController();
+  final lngController = TextEditingController();
+  final radiusController = TextEditingController();
+  var editingIndex = RxnInt(); // nullable int
   @override
   void onInit() {
     fetchbranch(); // Fetch all roles by default
@@ -20,28 +20,29 @@ var editingIndex = RxnInt(); // nullable int
   }
 
   void startEdit(int index, branch) {
-  editingIndex.value = index;
+    editingIndex.value = index;
 
-  nameController.text = branch.name ?? '';
-  latController.text = branch.latitude ?? '';
-  lngController.text = branch.longitude ?? '';
-  radiusController.text = branch.radius?.toString() ?? '';
-}
+    nameController.text = branch.name ?? '';
+    latController.text = branch.latitude ?? '';
+    lngController.text = branch.longitude ?? '';
+    radiusController.text = branch.radius?.toString() ?? '';
+  }
 
-void cancelEdit() {
-  editingIndex.value = null;
-}
-Future<void> saveEdit(branch) async {
-  await updatebranch(
-    branchid: branch.id!,
-    name: nameController.text,
-    latitude: latController.text,
-    longitude: lngController.text,
-    radius: int.parse(radiusController.text),
-  );
+  void cancelEdit() {
+    editingIndex.value = null;
+  }
 
-  editingIndex.value = null;
-}
+  Future<void> saveEdit(branch) async {
+    await updatebranch(
+      branchid: branch.id!,
+      name: nameController.text,
+      latitude: latController.text,
+      longitude: lngController.text,
+      radius: int.parse(radiusController.text),
+    );
+
+    editingIndex.value = null;
+  }
 
   Future<void> fetchbranch() async {
     try {
@@ -68,7 +69,7 @@ Future<void> saveEdit(branch) async {
       );
       if (created) {
         branch.clear();
-       fetchbranch();
+        fetchbranch();
         Get.back();
       }
     } catch (e) {

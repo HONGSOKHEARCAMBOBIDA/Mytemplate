@@ -3,24 +3,25 @@ import 'package:get/get.dart';
 import 'package:kemerahrfrontend/core/theme/app_color.dart';
 import 'package:kemerahrfrontend/core/theme/text_style.dart';
 import 'package:kemerahrfrontend/module/branch/controller/branchcontroller.dart';
+import 'package:kemerahrfrontend/module/shift/controller/shift_controller.dart';
+import 'package:kemerahrfrontend/share/widgets/customdropdown.dart';
 import 'package:kemerahrfrontend/share/widgets/customtextfield.dart';
 import 'package:kemerahrfrontend/share/widgets/elevated_button.dart';
 import 'package:kemerahrfrontend/share/widgets/floatingbutton.dart';
 import 'package:kemerahrfrontend/share/widgets/loading.dart';
 
-class Branchview extends StatefulWidget {
-  Branchview({super.key});
+class ShiftView extends StatefulWidget {
+  ShiftView({super.key});
 
   @override
-  State<Branchview> createState() => _BranchviewState();
+  State<ShiftView> createState() => _ShiftViewState();
 }
 
-class _BranchviewState extends State<Branchview> {
+class _ShiftViewState extends State<ShiftView> {
   var editingIndex = RxnInt();
   final nameController = TextEditingController();
-  final latController = TextEditingController();
-  final lngController = TextEditingController();
-  final radiusController = TextEditingController();
+  final selectbranchid = Rxn<int>();
+  final shiftcontrolller = Get.put(ShiftController());
   final branchcontroller = Get.put(Branchcontroller());
   final formkey = GlobalKey<FormState>();
 
@@ -32,68 +33,102 @@ class _BranchviewState extends State<Branchview> {
         color: AppColors.get('primary', context),
         backgroundColor: AppColors.get('background', context),
         onRefresh: () async {
-          await branchcontroller.fetchbranch();
+          await shiftcontrolller.fetchshift();
         },
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColors.get('warning', context).withOpacity(0.6),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: Obx(
-                        () => Text(
-                          "សាខាមានចំនួន : ${branchcontroller.branch.length}",
-                          style: TextStyles.siemreap(
+               Expanded(
+                 child: Row(
+                   children: [
+                     Padding(
+                       padding: const EdgeInsets.all(8.0),
+                       child: Container(
+                         decoration: BoxDecoration(
+                           color: AppColors.get('warning', context).withOpacity(0.6),
+                           borderRadius: BorderRadius.circular(5),
+                         ),
+                         child: Padding(
+                           padding: const EdgeInsets.all(6.0),
+                           child: Obx(
+                             () => Text(
+                               "វេនធ្វេីសរុបមានចំនួន : ${shiftcontrolller.shift.length}",
+                               style: TextStyles.siemreap(
+                  context,
+                  color: AppColors.get('text', context),
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                               ),
+                             ),
+                           ),
+                         ),
+                       ),
+                     ),
+                 
+                     // 🔥 FIX HERE
+                     Padding(
+                       padding: const EdgeInsets.all(4.0),
+                       child: SizedBox(
+                        height: 50,
+                        width: 200,
+                         child: CustomDropdown(
+                           selectedValue: shiftcontrolller.selectbranchid,
+                           items: branchcontroller.branch,
+                           hintText: "ស្វែងរកតាមរយ:សាខា",
+                           onChanged: (value) async {
+                             await shiftcontrolller.fetchshiftbybranchid(value!);
+                           },
+                         ),
+                       ),
+                     ),
+                   ],
+                 ),
+               ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "បញ្ជីវេនធ្វេីការ",
+                          style: TextStyles.moul(
                             context,
                             color: AppColors.get('text', context),
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 25,
                           ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "បញ្ជីសាខា",
-                    style: TextStyles.moul(
-                      context,
-                      color: AppColors.get('text', context),
-                      fontSize: 25,
+                Row(
+                  children: [
+                    IconButton(
+                      onPressed: () {
+                        shiftcontrolller.selectbranchid.value = null;
+                        shiftcontrolller.shift.clear();
+                        shiftcontrolller.fetchshift();
+                      },
+                      icon: Icon(
+                        Icons.refresh,
+                        size: 30,
+                        color: AppColors.get('primary', context),
+                      ),
                     ),
-                  ),
-                ),
-                IconButton(
-                  onPressed: () {
-                    branchcontroller.branch.clear();
-                    branchcontroller.fetchbranch();
-                  },
-                  icon: Icon(
-                    Icons.refresh,
-                    size: 30,
-                    color: AppColors.get('primary', context),
-                  ),
+                  ],
                 ),
               ],
             ),
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Obx(() {
-                if (branchcontroller.isLoading.value) {
+                if (shiftcontrolller.isLoading.value) {
                   return CustomLoading();
                 }
 
-                if (branchcontroller.branch.isEmpty) {
+                if (shiftcontrolller.shift.isEmpty) {
                   return Center(
                     child: Text(
                       "អត់មានទិន្ន័យ",
@@ -183,7 +218,7 @@ class _BranchviewState extends State<Branchview> {
                             child: Row(
                               children: [
                                 SelectableText(
-                                  "ឈ្មោះសាខា",
+                                  "ឈ្មោះវេនធ្វេីការ",
                                   style: TextStyles.siemreap(
                                     color: AppColors.get('background', context),
                                     context,
@@ -202,7 +237,7 @@ class _BranchviewState extends State<Branchview> {
                             child: Row(
                               children: [
                                 SelectableText(
-                                  "Latitude",
+                                  "ស្ថិតក្នុងសាខា",
                                   style: TextStyles.siemreap(
                                     color: AppColors.get('background', context),
                                     context,
@@ -214,44 +249,7 @@ class _BranchviewState extends State<Branchview> {
                             ),
                           ),
                         ),
-                        DataColumn(
-                          columnWidth: FlexColumnWidth(1),
-                          label: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                SelectableText(
-                                  "Longitude",
-                                  style: TextStyles.siemreap(
-                                    color: AppColors.get('background', context),
-                                    context,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        DataColumn(
-                          columnWidth: FlexColumnWidth(1),
-                          label: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                SelectableText(
-                                  "ចម្ងាយដែលអាចស្កែនបាន",
-                                  style: TextStyles.siemreap(
-                                    color: AppColors.get('background', context),
-                                    context,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+
                         DataColumn(
                           columnWidth: FlexColumnWidth(1),
                           label: SingleChildScrollView(
@@ -291,10 +289,10 @@ class _BranchviewState extends State<Branchview> {
                           ),
                         ),
                       ],
-                      rows: List.generate(branchcontroller.branch.length, (
+                      rows: List.generate(shiftcontrolller.shift.length, (
                         index,
                       ) {
-                        final branch = branchcontroller.branch[index];
+                        final shift = shiftcontrolller.shift[index];
                         return DataRow(
                           cells: [
                             // លរ (Index)
@@ -312,33 +310,25 @@ class _BranchviewState extends State<Branchview> {
                             // ឈ្មោះសាខា
                             DataCell(
                               Obx(() {
-                                return branchcontroller.editingIndex.value ==
+                                return shiftcontrolller.editingIndex.value ==
                                         index
                                     ? SizedBox(
                                         width: 220,
                                         child: CustomTextField(
                                           controller:
-                                              branchcontroller.nameController,
+                                              shiftcontrolller.nameController,
                                           hintText: "",
                                           onSubmitted: (Value) async {
-                                            await branchcontroller.updatebranch(
-                                              branchid: branch.id!,
-                                              name: branchcontroller
+                                            await shiftcontrolller.updateshift(
+                                              branchid: shiftcontrolller
+                                                  .selectbranchid
+                                                  .value!,
+                                              name: shiftcontrolller
                                                   .nameController
                                                   .text,
-                                              latitude: branchcontroller
-                                                  .latController
-                                                  .text,
-                                              longitude: branchcontroller
-                                                  .lngController
-                                                  .text,
-                                              radius: int.parse(
-                                                branchcontroller
-                                                    .radiusController
-                                                    .text,
-                                              ),
+                                              shiftid: shift.id!,
                                             );
-                                            branchcontroller
+                                            shiftcontrolller
                                                     .editingIndex
                                                     .value =
                                                 null;
@@ -347,13 +337,13 @@ class _BranchviewState extends State<Branchview> {
                                       )
                                     : GestureDetector(
                                         onDoubleTap: () {
-                                          branchcontroller.startEdit(
+                                          shiftcontrolller.startEdit(
                                             index,
-                                            branch,
+                                            shift,
                                           );
                                         },
                                         child: SelectableText(
-                                          branch.name ?? "អត់មាន",
+                                          shift.name ?? "អត់មាន",
                                           style: TextStyles.siemreap(
                                             context,
                                             fontSize: 15,
@@ -364,164 +354,54 @@ class _BranchviewState extends State<Branchview> {
                             ),
                             // Latitude
                             DataCell(
-                              Obx(() {
-                                return branchcontroller.editingIndex.value ==
-                                        index
-                                    ? SizedBox(
-                                        width: 220,
-                                        child: CustomTextField(
-                                          //  keyboardType: TextInputType.number,
-                                          controller:
-                                              branchcontroller.latController,
-                                          hintText: "",
-                                          onSubmitted: (Value) async {
-                                            await branchcontroller.updatebranch(
-                                              branchid: branch.id!,
-                                              name: branchcontroller
-                                                  .nameController
-                                                  .text,
-                                              latitude: branchcontroller
-                                                  .latController
-                                                  .text,
-                                              longitude: branchcontroller
-                                                  .lngController
-                                                  .text,
-                                              radius: int.parse(
-                                                branchcontroller
-                                                    .radiusController
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Obx(() {
+                                  return shiftcontrolller.editingIndex.value ==
+                                          index
+                                      ? SizedBox(
+                                          width: 220,
+                                          child: CustomDropdown(
+                                            selectedValue:
+                                                shiftcontrolller.selectbranchid,
+                                            items: branchcontroller.branch,
+                                            hintText: "",
+                                            onChanged: (value) async {
+                                              await shiftcontrolller.updateshift(
+                                                branchid: shiftcontrolller
+                                                    .selectbranchid
+                                                    .value!,
+                                                name: shiftcontrolller
+                                                    .nameController
                                                     .text,
-                                              ),
-                                            );
-                                            branchcontroller
-                                                    .editingIndex
-                                                    .value =
-                                                null;
-                                          },
-                                        ),
-                                      )
-                                    : GestureDetector(
+                                                shiftid: shift.id!,
+                                              );
+                                              shiftcontrolller
+                                                      .editingIndex
+                                                      .value =
+                                                  null;
+                                            },
+                                          ),
+                                        )
+                                      : GestureDetector(
                                         onDoubleTap: () {
-                                          branchcontroller.startEdit(
+                                          shiftcontrolller.startEdit(
                                             index,
-                                            branch,
+                                            shift,
                                           );
                                         },
                                         child: SelectableText(
-                                          branch.latitude ?? "-",
-                                          style: TextStyles.siemreap(
-                                            context,
-                                            fontSize: 15,
+                                            shift.branchName ?? "-",
+                                            style: TextStyles.siemreap(
+                                              context,
+                                              fontSize: 15,
+                                            ),
                                           ),
-                                        ),
                                       );
-                              }),
+                                }),
+                              ),
                             ),
-                            // Longitude
-                            DataCell(
-                              Obx(() {
-                                return branchcontroller.editingIndex.value ==
-                                        index
-                                    ? SizedBox(
-                                        width: 220,
-                                        child: CustomTextField(
-                                          controller:
-                                              branchcontroller.lngController,
-                                          hintText: "",
-                                          onSubmitted: (Value) async {
-                                            await branchcontroller.updatebranch(
-                                              branchid: branch.id!,
-                                              name: branchcontroller
-                                                  .nameController
-                                                  .text,
-                                              latitude: branchcontroller
-                                                  .latController
-                                                  .text,
-                                              longitude: branchcontroller
-                                                  .lngController
-                                                  .text,
-                                              radius: int.parse(
-                                                branchcontroller
-                                                    .radiusController
-                                                    .text,
-                                              ),
-                                            );
-                                            branchcontroller
-                                                    .editingIndex
-                                                    .value =
-                                                null;
-                                          },
-                                        ),
-                                      )
-                                    : GestureDetector(
-                                        onDoubleTap: () {
-                                          branchcontroller.startEdit(
-                                            index,
-                                            branch,
-                                          );
-                                        },
-                                        child: SelectableText(
-                                          branch.longitude ?? "-",
-                                          style: TextStyles.siemreap(
-                                            context,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      );
-                              }),
-                            ),
-                            // Radius
-                            DataCell(
-                              Obx(() {
-                                return branchcontroller.editingIndex.value ==
-                                        index
-                                    ? SizedBox(
-                                        width: 80,
-                                        child: CustomTextField(
-                                          controller:
-                                              branchcontroller.radiusController,
-                                          hintText: "",
-                                          onSubmitted: (Value) async {
-                                            await branchcontroller.updatebranch(
-                                              branchid: branch.id!,
-                                              name: branchcontroller
-                                                  .nameController
-                                                  .text,
-                                              latitude: branchcontroller
-                                                  .latController
-                                                  .text,
-                                              longitude: branchcontroller
-                                                  .lngController
-                                                  .text,
-                                              radius: int.parse(
-                                                branchcontroller
-                                                    .radiusController
-                                                    .text,
-                                              ),
-                                            );
-                                            branchcontroller
-                                                    .editingIndex
-                                                    .value =
-                                                null;
-                                          },
-                                        ),
-                                      )
-                                    : GestureDetector(
-                                        onDoubleTap: () {
-                                          branchcontroller.startEdit(
-                                            index,
-                                            branch,
-                                          );
-                                        },
-                                        child: SelectableText("${branch.radius?.toString() ?? "-"} ម៉ែត្រ",
-                                          
-                                          style: TextStyles.siemreap(
-                                            context,
-                                            fontSize: 15,
-                                          ),
-                                        ),
-                                      );
-                              }),
-                            ),
+
                             // Status
                             DataCell(
                               Container(
@@ -530,19 +410,17 @@ class _BranchviewState extends State<Branchview> {
                                   vertical: 8,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: (branch.isActive == true)
+                                  color: (shift.isActive == true)
                                       ? Colors.green.withOpacity(0.2)
                                       : Colors.red.withOpacity(0.2),
                                   borderRadius: BorderRadius.circular(10),
                                 ),
                                 child: Text(
-                                  (branch.isActive == true)
-                                      ? "សកម្ម"
-                                      : "អសកម្ម",
+                                  (shift.isActive == true) ? "សកម្ម" : "អសកម្ម",
                                   style: TextStyles.siemreap(
                                     context,
                                     fontSize: 15,
-                                    color: (branch.isActive == true)
+                                    color: (shift.isActive == true)
                                         ? Colors.green
                                         : Colors.red,
                                   ),
@@ -553,7 +431,7 @@ class _BranchviewState extends State<Branchview> {
                             DataCell(
                               Obx(() {
                                 final isEditing =
-                                    branchcontroller.editingIndex.value ==
+                                    shiftcontrolller.editingIndex.value ==
                                     index;
 
                                 return Row(
@@ -563,25 +441,16 @@ class _BranchviewState extends State<Branchview> {
                                       // ✅ Save
                                       IconButton(
                                         onPressed: () async {
-                                          await branchcontroller.updatebranch(
-                                            branchid: branch.id!,
-                                            name: branchcontroller
+                                          await shiftcontrolller.updateshift(
+                                            branchid: shiftcontrolller
+                                                .selectbranchid
+                                                .value!,
+                                            name: shiftcontrolller
                                                 .nameController
                                                 .text,
-                                            latitude: branchcontroller
-                                                .latController
-                                                .text,
-                                            longitude: branchcontroller
-                                                .lngController
-                                                .text,
-                                            radius: int.parse(
-                                              branchcontroller
-                                                  .radiusController
-                                                  .text,
-                                            ),
+                                            shiftid: shift.id!,
                                           );
-
-                                          branchcontroller.editingIndex.value =
+                                          shiftcontrolller.editingIndex.value =
                                               null;
                                         },
                                         icon: Icon(
@@ -599,7 +468,7 @@ class _BranchviewState extends State<Branchview> {
                                       // ❌ Cancel
                                       IconButton(
                                         onPressed: () {
-                                          branchcontroller.editingIndex.value =
+                                          shiftcontrolller.editingIndex.value =
                                               null;
                                         },
                                         icon: Icon(
@@ -615,9 +484,9 @@ class _BranchviewState extends State<Branchview> {
                                       // ✏️ Edit
                                       InkWell(
                                         onTap: () {
-                                          branchcontroller.startEdit(
+                                          shiftcontrolller.startEdit(
                                             index,
-                                            branch,
+                                            shift,
                                           );
                                         },
                                         borderRadius: BorderRadius.circular(8),
@@ -648,8 +517,8 @@ class _BranchviewState extends State<Branchview> {
                                       // 🔴 Toggle Status
                                       InkWell(
                                         onTap: () =>
-                                            branchcontroller.changestatusbranch(
-                                              branchid: branch.id!,
+                                            shiftcontrolller.changestatusshift(
+                                              shiftid: shift.id!,
                                             ),
                                         borderRadius: BorderRadius.circular(8),
                                         child: Container(
@@ -686,13 +555,13 @@ class _BranchviewState extends State<Branchview> {
       floatingActionButton: CustomFloatingActionButton(
         heroTag: "gotocreaterole",
         onPressed: () {
-          showCreateBranch(context);
+          showCreateShift(context);
         },
       ),
     );
   }
 
-  void showCreateBranch(BuildContext context) {
+  void showCreateShift(BuildContext context) {
     final formKey = GlobalKey<FormState>();
 
     Get.dialog(
@@ -701,11 +570,7 @@ class _BranchviewState extends State<Branchview> {
         child: Builder(
           builder: (_) {
             final nameController = TextEditingController();
-            final radiusController = TextEditingController();
-            final latitudeCotroller = TextEditingController();
-            final longitudeController = TextEditingController();
-            final selectedLat = RxnDouble();
-            final selectedLng = RxnDouble();
+            final selectbranchid = Rxn<int>();
 
             return ConstrainedBox(
               constraints: BoxConstraints(
@@ -735,7 +600,7 @@ class _BranchviewState extends State<Branchview> {
                             ),
                           ),
                           Text(
-                            "បង្កើតសាខាថ្មី",
+                            "បង្កើតវ៉េនធ្វេីការថ្មី",
                             style: TextStyles.siemreap(
                               context,
                               fontSize: 18,
@@ -749,7 +614,7 @@ class _BranchviewState extends State<Branchview> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "ឈ្មោះសាខា",
+                              "ឈ្មោះវ៉េនធ្វេីការ",
                               style: TextStyles.siemreap(context, fontSize: 12),
                             ),
                           ),
@@ -757,10 +622,11 @@ class _BranchviewState extends State<Branchview> {
                           CustomTextField(
                             controller: nameController,
                             prefixIcon: Icons.home,
-                            hintText: "ឈ្មោះសាខា (ឧ. Toul Kork)",
+                            hintText:
+                                "ឈ្មោះវេនធ្វើការ (ឧ. សម្រាប់បុគ្គលិកពេញសិទ្ធ)",
                             validator: (value) {
                               if (value == null || value.trim().isEmpty) {
-                                return 'សូមបញ្ចូលឈ្មោះសាខា';
+                                return 'សូមបញ្ចូលឈ្មោះវេនធ្វើការ';
                               }
                               if (value.trim().length < 3) {
                                 return 'ត្រូវមានយ៉ាងហោចណាស់ 3 តួអក្សរ';
@@ -774,54 +640,19 @@ class _BranchviewState extends State<Branchview> {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              "ទីតាំងសាខា",
+                              "ស្ថិតក្នុងសាខា",
                               style: TextStyles.siemreap(context, fontSize: 12),
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: latitudeCotroller,
-                                  hintText: "Latitude",
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: CustomTextField(
-                                  controller: longitudeController,
-                                  hintText: "Longitude",
-                                  keyboardType: TextInputType.number,
-                                ),
-                              ),
-                            ],
-                          ),
+
                           const SizedBox(height: 15),
 
-                          // Radius
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              "ចម្ងាយដែលអាចស្កែនបាន (m)",
-                              style: TextStyles.siemreap(context, fontSize: 12),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          CustomTextField(
-                            controller: radiusController,
-                            prefixIcon: Icons.circle_outlined,
-                            hintText: "ឧ. 20",
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'សូមបញ្ចូលចម្ងាយ';
-                              }
-                              if (int.tryParse(value.trim()) == null) {
-                                return 'សូមបញ្ចូលលេខត្រឹមត្រូវ';
-                              }
-                              return null;
+                          CustomDropdown(
+                            selectedValue: selectbranchid,
+                            items: branchcontroller.branch,
+                            hintText: "ជ្រេីសរេីសសាខា",
+                            onChanged: (value) {
+                              selectbranchid.value = value;
                             },
                           ),
 
@@ -833,27 +664,10 @@ class _BranchviewState extends State<Branchview> {
                             onPressed: () async {
                               if (!formKey.currentState!.validate()) return;
 
-                              final int radius = int.parse(
-                                radiusController.text.trim(),
-                              );
-
-                              // Loading
-                              Get.dialog(
-                                const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                                barrierDismissible: false,
-                              );
-
-                              await branchcontroller.createbranch(
+                              await shiftcontrolller.createshift(
                                 name: nameController.text.trim(),
-                                latitude: latitudeCotroller.text,
-                                longitude: longitudeController.text,
-                                radius: radius,
+                                branchid: selectbranchid.value!,
                               );
-
-                              Get.back(); // close loading
-                              Get.back(); // close dialog
                             },
                           ),
                         ],

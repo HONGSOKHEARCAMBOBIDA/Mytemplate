@@ -51,6 +51,11 @@ class MainController extends GetxController {
           },
         ),
         FeatureItem(
+          icon: Icons.calendar_month,
+          title: "វ៉េនធ្វេីការតាមសារខា", // Work Shift
+          onTap: () {},
+        ),
+        FeatureItem(
           icon: Icons.currency_exchange,
           title: "រូបិយប័ណ្ណ", // Currency
           onTap: () {
@@ -96,11 +101,6 @@ class MainController extends GetxController {
         FeatureItem(
           icon: Icons.admin_panel_settings,
           title: "តួនាទីក្នុងប្រព័ន្ធ", // System Role
-          onTap: () {},
-        ),
-        FeatureItem(
-          icon: Icons.calendar_month,
-          title: "វ៉េនធ្វេីការ", // Work Shift
           onTap: () {},
         ),
         FeatureItem(
