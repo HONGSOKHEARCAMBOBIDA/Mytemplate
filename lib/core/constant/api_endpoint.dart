@@ -9,4 +9,9 @@ class ApiEndpoint {
   static const AddShift = "add.shift";
   static UpdateShift(int id) => "update.shift/$id";
   static ChangeStatusShift(int id) => "change.status.shift/$id";
+  static String ViewAllShiftSession = "view.all.shift.session";
+  static ViewShiftSessionByShiftID(int id) => "view.shift.session.by.shift.id/$id";
+  static String AddShiftSession = "add.shift.session";
+  static UpdateShiftSession(int id) => "update.shift.session/$id";
+  static ChangeStatusShiftSession(int id) => "change.status.shift.session/$id";
 }
